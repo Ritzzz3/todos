@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO</title>
+    {% comment %} <link rel="stylesheet" href="style.css"> {% endcomment %}
+    <style>
+            * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: blueviolet;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 100%;
+        min-height: 100vh;
+        background-color: blueviolet;
+        display: flex;
+        justify-content: center;
+    }
+
+    .box {
+        background-color: rgb(213, 182, 244);
+        border: solid 2px black;
+        width: 90%;
+        max-width: 700px;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .form1 {
+        background-color: aliceblue;
+        width: 100%;
+        border: solid 2px black;
+        border-radius: 10px;
+        padding: 5px;
+    }
+
+    .box2 {
+        display: flex;
+        gap: 10px;
+        height: 100%;
+        width: 100%;
+    }
+
+    .box2 input {
+        border: solid 2px black;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .box2 input[type=text] {
+        flex: 1;
+        font-size: 1.1rem;
+    }
+
+    .box2 input[type=submit] {
+        width: 20%;
+        min-width: 80px;
+        cursor: pointer;
+        font-weight: bold;
+        background: #5f3dc4;
+        color: white;
+        border: none;
+    }
+
+    .box3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        gap: 10px;
+        font-size: 1.2rem;
+        flex-wrap: wrap; /* helps in mobile */
+    }
+
+    .box3 input[type=checkbox] {
+        height: 18px;
+        width: 18px;
+        accent-color: green;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+
+    .complete {
+        text-decoration: line-through;
+        color: #666;
+    }
+
+    button {
+        height: 25px;
+        width: 25px;
+        font-size: 1.2rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+
+    .no-task {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #444;
+        margin-top: 20px;
+    }
+
+    /* delete button */
+    .delete-btn {
+        background-color: red;
+        color: white;
+        text-decoration: none;
+        height: 40px;
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: width 0.4s ease;
+        border-radius: 10px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .delete-btn:hover {
+        width: 100px;
+        justify-content: flex-start;
+        padding-left: 10px;
+    }
+
+    .icon {
+        flex-shrink: 0;
+        font-size: 1.5rem;
+        transition: margin 0.3s ease;
+    }
+
+    .delete-btn:hover .icon {
+        margin-right: 8px;
+    }
+
+    .del-text {
+        opacity: 0;
+        font-size: 0;
+        transition: opacity 0.3s ease 0.2s, font-size 0.3s ease 0.2s;
+    }
+
+    .delete-btn:hover .del-text {
+        opacity: 1;
+        font-size: 1rem;
+    }
+
+    /* ---------------- RESPONSIVE DESIGN ---------------- */
+    @media (max-width: 768px) {
+        .box {
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+        }
+
+        .box2 input[type=text] {
+            font-size: 1rem;
+        }
+
+        .box2 input[type=submit] {
+            width: 25%;
+        }
+
+        .box3 {
+            font-size: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .rightbox {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .box {
+            width: 95%;
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+        }
+
+        .box2 {
+            flex-direction: column;
+        }
+
+        .box2 input[type=text],
+        .box2 input[type=submit] {
+            width: 100%;
+            font-size: 1rem;
+            height: 40px;
+        }
+
+        .box3 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .rightbox {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="box">
+            <h2>TODOS</h2>
+
+            <!-- Add Todo Form -->
+            <form action="" method="post" class="form1">
+               {% csrf_token %}
+                <div class="box2">
+                    <input type="text" name="task" placeholder="Add your next todo" autocomplete="off" required>
+                    <input type="submit" value="Add">
+                </div>
+            </form>
+
+            <!-- Todo Item -->
+             {% if tasks %}
+             {% for task in tasks%}
+            <form action="{% url 'update' task.id %}" method="post" class="form1">
+                {% csrf_token%}
+                
+                <div class="box3">
+                    <div class="leftbox">
+                        <label>
+                            <input  type="checkbox" {% if task.complete %} checked {% endif%} name="complete" onchange = "this.form.submit()">
+                            <button type="submit" name="important">{% if task.important%}⭐ {% else %} ✰ {% endif %}</button>
+                            <span>{{task.tasks}}</span>
+                        </label>
+                    </div>
+                    <div class="rightbox">
+                        <a href="{% url 'delete' task.id %}" class="delete-btn">
+                            <span class="icon">🗑</span>
+                            <span class="del-text">Delete</span>
+                        </a>
+                    </div>
+                </div>
+               
+            </form>
+             {% endfor %}
+            {% else %}
+            <!-- No tasks message -->
+            <p class="no-task">No todos yet..</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+
+</html>
